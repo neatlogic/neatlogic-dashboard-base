@@ -7,19 +7,15 @@ package codedriver.framework.dashboard.handler;
 
 import com.alibaba.fastjson.JSONObject;
 
-import codedriver.framework.dashboard.dto.ChartDataVo;
+import codedriver.framework.dashboard.dto.DashboardDataVo;
 import codedriver.framework.dashboard.dto.DashboardWidgetVo;
 
 public abstract class DashboardHandlerBase implements IDashboardHandler {
-	public final ChartDataVo getData(DashboardWidgetVo widgetVo) {
-		ChartDataVo chartDataVo = new ChartDataVo();
-		JSONObject dataJson = myGetData(widgetVo);
-		chartDataVo.setData(dataJson);
-		chartDataVo.setConfigObj(dataJson.getJSONObject("configObj"));
-		return chartDataVo;
+	public final DashboardDataVo getData(DashboardWidgetVo widgetVo) {
+		return myGetData(widgetVo);
 	}
 
-	protected abstract JSONObject myGetData(DashboardWidgetVo widgetVo);
+	protected abstract DashboardDataVo myGetData(DashboardWidgetVo widgetVo);
 	
 	public final JSONObject getConfig(DashboardWidgetVo widgetVo) {
 		return myGetConfig(widgetVo);

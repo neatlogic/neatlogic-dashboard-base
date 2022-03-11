@@ -86,14 +86,6 @@ public class DashboardWidgetChartConfigVo implements Serializable {
         this.subGroup = subGroup;
     }
 
-    public LinkedHashMap<String, Object> getGroupDataCountMap() {
-        return groupDataCountMap;
-    }
-
-    public void setGroupDataCountMap(LinkedHashMap<String, Object> groupDataCountMap) {
-        this.groupDataCountMap = groupDataCountMap;
-    }
-
     public String getGroupName() {
         return groupName;
     }

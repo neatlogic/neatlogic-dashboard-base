@@ -3,10 +3,7 @@ package codedriver.framework.dashboard.charts.core;
 import codedriver.framework.common.constvalue.dashboard.ChartType;
 import codedriver.framework.common.constvalue.dashboard.DashboardShowConfig;
 import codedriver.framework.dashboard.charts.DashboardChartBase;
-import codedriver.framework.dashboard.dto.DashboardDataGroupVo;
-import codedriver.framework.dashboard.dto.DashboardDataSubGroupVo;
-import codedriver.framework.dashboard.dto.DashboardWidgetDataGroupVo;
-import codedriver.framework.dashboard.dto.DashboardShowConfigVo;
+import codedriver.framework.dashboard.dto.*;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,86 +19,70 @@ public class TableChart extends DashboardChartBase {
     }
 
     @Override
-    public JSONObject getData(DashboardWidgetDataGroupVo dashboardDataVo) {
-        JSONObject dataJson = new JSONObject();
+    public DashboardDataVo getMyData(DashboardWidgetAllGroupDefineVo dashboardDataVo, List<Map<String, Object>> dbDataMapList) {
         List<Map<String, Object>> dataList = new ArrayList<>();
-        List<Map<String, String>> theadList = new ArrayList<>();
-        List<Map<String, String>> columnList = new ArrayList<>();
         Map<String, Object> columnTypeMap = new HashMap<>();
-        DashboardDataGroupVo dataGroupVo = dashboardDataVo.getDataGroupVo();
-        DashboardDataSubGroupVo dataSubGroupVo = dashboardDataVo.getDataSubGroupVo();
-        if (CollectionUtils.isNotEmpty(dataGroupVo.getDataList())) {
-            List<String> theads = new ArrayList<>();
-            List<String> columns = new ArrayList<>();
-            for (Map<String, Object> dataMap : dataGroupVo.getDataList()) {
-                Map<String, String> theadMap = new LinkedHashMap<>();
-                Map<String, String> columnMap = new LinkedHashMap<>();
-                if(!dataMap.containsKey(dataGroupVo.getPrimaryKey())){
+        List<DashboardTableColumnTheadVo> tableTheadVoList = new ArrayList<>();
+        List<DashboardTableColumnTheadVo> tableColumnVoList = new ArrayList<>();
+        DashboardWidgetGroupDefineVo dataGroupDefineVo = dashboardDataVo.getGroupDefineVo();
+        DashboardWidgetGroupDefineVo dataSubGroupDefineVo = dashboardDataVo.getSubGroupDefineVo();
+        if (CollectionUtils.isNotEmpty(dbDataMapList)) {
+            for (Map<String, Object> dataMap : dbDataMapList) {
+                if(!dataMap.containsKey(dataGroupDefineVo.getPrimaryKey())){
                     continue;
                 }
-                String column = dataMap.get(dataGroupVo.getPrimaryKey()).toString();
+                String column = dataMap.get(dataGroupDefineVo.getPrimaryKey()).toString();
                 if (StringUtils.isNotBlank(column)) {
                     //columnList
-                    String columnValue = dataMap.get(dataGroupVo.getProName()).toString();
-                    if (!columns.contains(columnValue)) {
-                        columnMap.put("displayName", columnValue);
-                        columnMap.put("name", column);
-                        columns.add(columnValue);
-                        columnList.add(columnMap);
+                    String columnValue = dataMap.get(dataGroupDefineVo.getProName()).toString();
+                    if (tableColumnVoList.stream().noneMatch(o->Objects.equals(o.getName(),columnValue))) {
+                        tableColumnVoList.add(new DashboardTableColumnTheadVo(column,columnValue));
                     }
-                    String displayName = StringUtils.EMPTY;
-                    String name = StringUtils.EMPTY;
-                    if (dataSubGroupVo != null) {
+                    String displayName;
+                    String name;
+                    if (dataSubGroupDefineVo != null) {
                         //拼接map column_type->value
-                        if(!dataMap.containsKey(dataSubGroupVo.getPrimaryKey())){
+                        if(!dataMap.containsKey(dataSubGroupDefineVo.getPrimaryKey())){
                             continue;
                         }
-                        String type = dataMap.get(dataSubGroupVo.getPrimaryKey()).toString();
+                        String type = dataMap.get(dataSubGroupDefineVo.getPrimaryKey()).toString();
                         if (StringUtils.isNotBlank(type)) {
                             columnTypeMap.put(column + "_" + type, dataMap.get("count"));
                         }
                         //theadList
-                        String theadValue = dataMap.get(dataSubGroupVo.getProName()).toString();
-                        if (!theads.contains(theadValue)) {
-                            displayName = theadValue;
-                            name = dataMap.get(dataSubGroupVo.getPrimaryKey()).toString();
-                        }
+                        displayName = dataMap.get(dataSubGroupDefineVo.getProName()).toString();
+                        name = dataMap.get(dataSubGroupDefineVo.getPrimaryKey()).toString();
                     } else {
-                        displayName = name = "总数";
+                        displayName = "总数";
+                        name = "totalCount";
                         columnTypeMap.put(column, dataMap.get("count"));
                     }
-                    if (StringUtils.isNotBlank(displayName) && !theads.contains(displayName)) {
-                        theadMap.put("displayName", displayName);
-                        theadMap.put("name", name);
-                        theads.add(displayName);
-                        theadList.add(theadMap);
+                    if (tableTheadVoList.stream().noneMatch(o->Objects.equals(o.getName(),displayName))) {
+                        tableTheadVoList.add(new DashboardTableColumnTheadVo(name,displayName));
                     }
                 }
             }
         }
         //返回dataList
-        if (CollectionUtils.isNotEmpty(columnList)) {
-            for (Map<String, String> columnMap : columnList) {
-                String column = columnMap.get("name");
-                Map<String, Object> dataMap = new HashMap<>();
-                if (dataSubGroupVo != null) {
-                    for (Map<String, String> theadMap : theadList) {
-                        String type = theadMap.get("name");
+        if (CollectionUtils.isNotEmpty(tableColumnVoList)) {
+            for (DashboardTableColumnTheadVo columnVo : tableColumnVoList) {
+                String column = columnVo.getName();
+                Map<String, Object> dataResultMap = new HashMap<>();
+                if (dataSubGroupDefineVo != null) {
+                    for (DashboardTableColumnTheadVo theadVo : tableTheadVoList) {
+                        String type = theadVo.getName();
                         String count = String.valueOf(columnTypeMap.get(column + "_" + type) == null ? "0" : columnTypeMap.get(column + "_" + type));
                         if (StringUtils.isNotBlank(count)) {
-                            dataMap.put(type, count);
+                            dataResultMap.put(type, count);
                         }
                     }
 				} else {
-                    dataMap.put("总数", columnTypeMap.get(column));
+                    dataResultMap.put("totalCount", columnTypeMap.get(column));
 				}
-				dataList.add(dataMap);
+				dataList.add(dataResultMap);
 			}
         }
-        dataJson.put("dataList", dataList);
-        dataJson.put("columnList", columnList);
-        dataJson.put("theadList", theadList);
-        return dataJson;
+        return  new DashboardDataVo(dataList,tableColumnVoList,tableTheadVoList);
     }
 
     @Override

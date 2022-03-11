@@ -1,14 +1,17 @@
 package codedriver.framework.dashboard.charts;
 
-import codedriver.framework.dashboard.dto.DashboardDataGroupVo;
-import codedriver.framework.dashboard.dto.DashboardDataSubGroupVo;
-import codedriver.framework.dashboard.dto.DashboardWidgetDataGroupVo;
+import codedriver.framework.dashboard.dto.DashboardDataVo;
+import codedriver.framework.dashboard.dto.DashboardWidgetAllGroupDefineVo;
 import codedriver.framework.dashboard.dto.DashboardWidgetDataVo;
+import codedriver.framework.dashboard.dto.DashboardWidgetGroupDefineVo;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public abstract class DashboardChartBase {
     /**
@@ -25,35 +28,34 @@ public abstract class DashboardChartBase {
      * @return JSONObject
      * @Description: 返回数据
      */
-    public JSONObject getData(DashboardWidgetDataGroupVo dashboardDataVo) {
-        return getMyData(dashboardDataVo);
+    public DashboardDataVo getData(DashboardWidgetAllGroupDefineVo dashboardWidgetAllGroupDefineVo, List<Map<String, Object>> dbDataMapList) {
+        DashboardDataVo dashboardDataVo = getMyData(dashboardWidgetAllGroupDefineVo,dbDataMapList);
+        dashboardDataVo.setConfigObj(dashboardWidgetAllGroupDefineVo.getChartConfigVo().getConfig());
+        return dashboardDataVo;
     }
 
-    public JSONObject getMyData(DashboardWidgetDataGroupVo dashboardDataVo) {
-        JSONObject dataJson = new JSONObject();
-        dataJson.put("dataList", getDefaultData(dashboardDataVo));
-        return dataJson;
+    public DashboardDataVo getMyData(DashboardWidgetAllGroupDefineVo dashboardWidgetAllGroupDefineVo,List<Map<String, Object>> dbDataMapList) {
+        return new DashboardDataVo(getDefaultData(dashboardWidgetAllGroupDefineVo,dbDataMapList));
     }
 
     /**
-     * @Description: 支持 普遍chart的数据处理
-     * @Author: 89770
-     * @Date: 2021/3/12 15:01
-     * @Params: [dashboardDataVo]
-     * @Returns: com.alibaba.fastjson.JSONObject
-     **/
-    protected List<DashboardWidgetDataVo> getDefaultData(DashboardWidgetDataGroupVo dashboardDataGroupVo) {
+     *
+     * @param dashboardWidgetAllGroupDefineVo dashboard 一级分组和二级分组的映射声明
+     * @param dbDataMapList 从数据库查回来的数据
+     * @return
+     */
+    protected List<DashboardWidgetDataVo> getDefaultData(DashboardWidgetAllGroupDefineVo dashboardWidgetAllGroupDefineVo,List<Map<String, Object>> dbDataMapList) {
         List<DashboardWidgetDataVo> resultDataList = new ArrayList<>();
-        DashboardDataGroupVo dataGroupVo = dashboardDataGroupVo.getDataGroupVo();
-        DashboardDataSubGroupVo dataSubGroupVo = dashboardDataGroupVo.getDataSubGroupVo();
-        if (CollectionUtils.isNotEmpty(dataGroupVo.getDataList())) {
-            Map<String, Object> groupDataCountMap = dataGroupVo.getDataCountMap();
+        DashboardWidgetGroupDefineVo dataGroupDefineVo = dashboardWidgetAllGroupDefineVo.getGroupDefineVo();
+        DashboardWidgetGroupDefineVo dataSubGroupDefinedVo = dashboardWidgetAllGroupDefineVo.getSubGroupDefineVo();
+        if (CollectionUtils.isNotEmpty(dbDataMapList)) {
+            Map<String, Object> groupDataCountMap = dashboardWidgetAllGroupDefineVo.getDbExchangeGroupDataMap();
             //循环获取需要的字段数据
-            for (Map<String, Object> dataMap : dataGroupVo.getDataList()) {
+            for (Map<String, Object> dataMap : dbDataMapList) {
                 Iterator<Map.Entry<String, Object>> iterator = dataMap.entrySet().iterator();
                 DashboardWidgetDataVo dashboardWidgetDataVo = new DashboardWidgetDataVo();
                 //如果不包含primaryKey 或 存在值为null 的列，则废弃该数据
-                if (!dataMap.containsKey(dataGroupVo.getPrimaryKey()) || dataMap.containsValue(null)) {
+                if (!dataMap.containsKey(dataGroupDefineVo.getPrimaryKey()) || dataMap.containsValue(null)) {
                     continue;
                 }
                 while (iterator.hasNext()) {
@@ -61,25 +63,25 @@ public abstract class DashboardChartBase {
                     String key = entry.getKey();
                     String value = String.valueOf(entry.getValue());
                     //如果是分组
-                    if (dataGroupVo.getPrimaryKey().equals(key)) {
-                        if (dataSubGroupVo != null) {
+                    if (dataGroupDefineVo.getPrimaryKey().equals(key)) {
+                        if (dataSubGroupDefinedVo != null) {
                             dashboardWidgetDataVo.setTotal(groupDataCountMap.get(value).toString());
                         } else {
                             dashboardWidgetDataVo.setTotal(dataMap.get("count").toString());
                         }
                     }
-                    if (dataGroupVo.getProName().equals(key)) {
+                    if (dataGroupDefineVo.getProName().equals(key)) {
                         dashboardWidgetDataVo.setColumn(value);
                     }
 
-                    if (StringUtils.isNotBlank(dataGroupVo.getProTitle()) && dataGroupVo.getProTitle().equals(key)) {
+                    if (StringUtils.isNotBlank(dataGroupDefineVo.getProTitle()) && dataGroupDefineVo.getProTitle().equals(key)) {
                         dashboardWidgetDataVo.setColumnTitle(value);
                     }
                     //如果是子分组
-                    if (dataSubGroupVo != null && dataSubGroupVo.getProName().equals(key)) {
+                    if (dataSubGroupDefinedVo != null && dataSubGroupDefinedVo.getProName().equals(key)) {
                         dashboardWidgetDataVo.setType(value);
                     }
-                    if (dataSubGroupVo != null && StringUtils.isNotBlank(dataSubGroupVo.getProTitle()) && dataSubGroupVo.getProTitle().equals(key)) {
+                    if (dataSubGroupDefinedVo != null && StringUtils.isNotBlank(dataSubGroupDefinedVo.getProTitle()) && dataSubGroupDefinedVo.getProTitle().equals(key)) {
                         dashboardWidgetDataVo.setTypeTitle(value);
                     }
 
