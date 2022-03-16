@@ -18,6 +18,8 @@ public class DashboardDataVo {
 	private List<DashboardTableColumnTheadVo> tableTheadList;
 	@EntityField(name = "图表配置", type = ApiParamType.JSONOBJECT)
 	private JSONObject configObj;
+	@EntityField(name = "图表名称", type = ApiParamType.STRING)
+	private String name;
 
 	public DashboardDataVo() {
 	}
@@ -70,5 +72,13 @@ public class DashboardDataVo {
 
 	public void setTableTheadList(List<DashboardTableColumnTheadVo> tableTheadList) {
 		this.tableTheadList = tableTheadList;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
