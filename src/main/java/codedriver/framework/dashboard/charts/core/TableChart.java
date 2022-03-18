@@ -35,7 +35,7 @@ public class TableChart extends DashboardChartBase {
                 if (StringUtils.isNotBlank(column)) {
                     //columnList
                     String columnValue = dataMap.get(dataGroupDefineVo.getProName()).toString();
-                    if (tableColumnVoList.stream().noneMatch(o->Objects.equals(o.getName(),columnValue))) {
+                    if (tableColumnVoList.stream().noneMatch(o->Objects.equals(o.getDisplayName(),columnValue))) {
                         tableColumnVoList.add(new DashboardTableColumnTheadVo(column,columnValue));
                     }
                     String displayName;
@@ -57,7 +57,7 @@ public class TableChart extends DashboardChartBase {
                         name = "totalCount";
                         columnTypeMap.put(column, dataMap.get("count"));
                     }
-                    if (tableTheadVoList.stream().noneMatch(o->Objects.equals(o.getName(),displayName))) {
+                    if (tableTheadVoList.stream().noneMatch(o->Objects.equals(o.getDisplayName(),displayName))) {
                         tableTheadVoList.add(new DashboardTableColumnTheadVo(name,displayName));
                     }
                 }
