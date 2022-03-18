@@ -6,6 +6,7 @@ import codedriver.framework.dashboard.dto.DashboardWidgetDataVo;
 import codedriver.framework.dashboard.dto.DashboardWidgetGroupDefineVo;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public abstract class DashboardChartBase {
             Map<String, Object> groupDataCountMap = dashboardWidgetAllGroupDefineVo.getDbExchangeGroupDataMap();
             //循环获取需要的字段数据
             for (Map<String, Object> dataMap : dbDataMapList) {
+                if(MapUtils.isEmpty(dataMap)){
+                    continue;
+                }
                 Iterator<Map.Entry<String, Object>> iterator = dataMap.entrySet().iterator();
                 DashboardWidgetDataVo dashboardWidgetDataVo = new DashboardWidgetDataVo();
                 //如果不包含primaryKey 或 存在值为null 的列，则废弃该数据
@@ -65,9 +69,11 @@ public abstract class DashboardChartBase {
                     //如果是分组
                     if (dataGroupDefineVo.getPrimaryKey().equals(key)) {
                         if (dataSubGroupDefinedVo != null) {
-                            dashboardWidgetDataVo.setTotal(groupDataCountMap.get(value).toString());
+                            String count = groupDataCountMap.get(value) == null?"0":groupDataCountMap.get(value).toString();
+                            dashboardWidgetDataVo.setTotal(count);
                         } else {
-                            dashboardWidgetDataVo.setTotal(dataMap.get("count").toString());
+                            String count = dataMap.get("count") == null?"0":dataMap.get("count").toString();
+                            dashboardWidgetDataVo.setTotal(count);
                         }
                     }
                     if (dataGroupDefineVo.getProName().equals(key)) {
