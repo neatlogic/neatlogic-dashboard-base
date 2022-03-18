@@ -11,10 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DashboardWidgetDataVo {
     @EntityField(name = "总数", type = ApiParamType.STRING)
-    private String total;
+    private Object total;
 
     @EntityField(name = "分组值", type = ApiParamType.STRING)
-    private String value;
+    private Object value;
 
     @EntityField(name = "分组名", type = ApiParamType.STRING)
     private String column;
@@ -28,19 +28,19 @@ public class DashboardWidgetDataVo {
     @EntityField(name = "类型 提示", type = ApiParamType.STRING)
     private String typeTitle;
 
-    public String getTotal() {
+    public Object getTotal() {
         return total;
     }
 
-    public void setTotal(String total) {
+    public void setTotal(Object total) {
         this.total = total;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 

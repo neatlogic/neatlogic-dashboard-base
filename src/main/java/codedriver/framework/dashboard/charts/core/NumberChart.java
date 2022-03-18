@@ -29,12 +29,12 @@ public class NumberChart extends DashboardChartBase {
         if (StringUtils.isNotBlank(type) && type.equals("many")) {
             int total = 0;
             for (DashboardWidgetDataVo widgetDataVo : resultDataList) {
-                total += Long.parseLong(widgetDataVo.getTotal());
+                total += Integer.parseInt(widgetDataVo.getTotal().toString());
             }
             DashboardWidgetDataVo widgetTotalDataVo = new DashboardWidgetDataVo();
-            widgetTotalDataVo.setTotal(Integer.toString(total));
+            widgetTotalDataVo.setTotal(total);
             widgetTotalDataVo.setColumn("总数");
-            widgetTotalDataVo.setValue(Integer.toString(total));
+            widgetTotalDataVo.setValue(total);
             resultDataList.add(0, widgetTotalDataVo);
         }
         return new DashboardDataVo(resultDataList);

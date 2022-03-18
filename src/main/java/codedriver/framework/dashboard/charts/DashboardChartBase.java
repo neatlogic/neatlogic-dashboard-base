@@ -69,10 +69,10 @@ public abstract class DashboardChartBase {
                     //如果是分组
                     if (dataGroupDefineVo.getPrimaryKey().equals(key)) {
                         if (dataSubGroupDefinedVo != null) {
-                            String count = groupDataCountMap.get(value) == null?"0":groupDataCountMap.get(value).toString();
+                            Object count = groupDataCountMap.get(value) == null?0:Integer.parseInt(groupDataCountMap.get(value).toString());
                             dashboardWidgetDataVo.setTotal(count);
                         } else {
-                            String count = dataMap.get("count") == null?"0":dataMap.get("count").toString();
+                            Object count = dataMap.get("count") == null?0:dataMap.get("count");
                             dashboardWidgetDataVo.setTotal(count);
                         }
                     }
@@ -92,7 +92,8 @@ public abstract class DashboardChartBase {
                     }
 
                     if ("count".equals(key)) {
-                        dashboardWidgetDataVo.setValue(dataMap.get("count").toString());
+                        Object count = dataMap.get("count") == null?0:dataMap.get("count");
+                        dashboardWidgetDataVo.setValue(count);
                     }
                 }
                 resultDataList.add(dashboardWidgetDataVo);
