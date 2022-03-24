@@ -22,7 +22,7 @@ public class NumberChart extends DashboardChartBase {
     }
 
     @Override
-    public DashboardDataVo getData(DashboardWidgetAllGroupDefineVo dashboardWidgetAllGroupDefineVo, List<Map<String, Object>> dbDataMapList) {
+    public DashboardDataVo getMyData(DashboardWidgetAllGroupDefineVo dashboardWidgetAllGroupDefineVo, List<Map<String, Object>> dbDataMapList) {
         List<DashboardWidgetDataVo> resultDataList = getDefaultData(dashboardWidgetAllGroupDefineVo, dbDataMapList);
         //多值图补充总数
         String type = dashboardWidgetAllGroupDefineVo.getChartConfigVo().getType();
