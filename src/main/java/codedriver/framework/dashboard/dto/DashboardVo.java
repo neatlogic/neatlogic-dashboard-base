@@ -1,54 +1,48 @@
 /*
- * Copyright(c) 2021 TechSure Co., Ltd. All Rights Reserved.
+ * Copyright(c) 2022 TechSure Co., Ltd. All Rights Reserved.
  * 本内容仅限于深圳市赞悦科技有限公司内部传阅，禁止外泄以及用于其他的商业项目。
  */
 
 package codedriver.framework.dashboard.dto;
 
+import codedriver.framework.auth.core.AuthActionChecker;
 import codedriver.framework.common.constvalue.ApiParamType;
 import codedriver.framework.common.constvalue.GroupSearch;
 import codedriver.framework.common.dto.BaseEditorVo;
-import codedriver.framework.common.dto.BasePageVo;
 import codedriver.framework.dto.AuthorityVo;
 import codedriver.framework.restful.annotation.EntityField;
+import codedriver.framework.util.SnowflakeUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 public class DashboardVo extends BaseEditorVo {
-    @EntityField(name = "仪表板uuid", type = ApiParamType.STRING)
-    private String uuid;
+    @EntityField(name = "id", type = ApiParamType.LONG)
+    private Long id;
     @EntityField(name = "仪表板名称", type = ApiParamType.STRING)
     private String name;
     @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
     private int isActive;
-    @EntityField(name = "是否系统默认面板", type = ApiParamType.INTEGER)
-    private int isSystemDefault;
-    @EntityField(name = "是否个人默认面板", type = ApiParamType.INTEGER)
-    private int isCustomDefault;
     @EntityField(name = "描述", type = ApiParamType.STRING)
     private String description;
-    @EntityField(name = "仪表板组件列表", type = ApiParamType.JSONOBJECT)
-    private List<DashboardWidgetVo> widgetList;
+    @EntityField(name = "仪表板组件列表", type = ApiParamType.JSONARRAY)
+    private JSONArray widgetList;
+    @JSONField(serialize = false)
+    private String widgetListStr;
     @EntityField(name = "system：系统分类  custom：自定义分类", type = ApiParamType.STRING)
     private String type = "custom";
     @EntityField(name = "授权列表", type = ApiParamType.STRING)
-    private List<String> valueList;
-    @EntityField(name = "默认用户", type = ApiParamType.STRING)
-    private String defaultUser;
-    @EntityField(name = "默认用户", type = ApiParamType.STRING)
-    private String defaultType;
-    @EntityField(name = "是否拥有编辑权限", type = ApiParamType.JSONARRAY)
-    private Integer isCanEdit;
-    @EntityField(name = "是否拥有授权权限", type = ApiParamType.JSONARRAY)
-    private Integer isCanRole;
+    private List<String> authList;
     @JSONField(serialize = false)
     private List<AuthorityVo> authorityList;
+    @JSONField(serialize = false)
+    private String searchType;//搜索类型,all或mine
+    @JSONField(serialize = false)
+    private boolean isAdmin;//是否管理员
 
     //params
     private String userUuid;
@@ -56,15 +50,16 @@ public class DashboardVo extends BaseEditorVo {
     private List<String> roleUuidList;
     private Integer isMine;
 
-    public String getUuid() {
-        if (StringUtils.isBlank(uuid)) {
-            uuid = UUID.randomUUID().toString().replace("-", "");
+
+    public Long getId() {
+        if (id == null) {
+            id = SnowflakeUtil.uniqueLong();
         }
-        return uuid;
+        return id;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -75,6 +70,9 @@ public class DashboardVo extends BaseEditorVo {
         this.name = name;
     }
 
+    public boolean isAdmin() {
+        return AuthActionChecker.check("DASHBOARD_MODIFY");
+    }
 
 
     public int getIsActive() {
@@ -85,13 +83,6 @@ public class DashboardVo extends BaseEditorVo {
         this.isActive = isActive;
     }
 
-    public List<DashboardWidgetVo> getWidgetList() {
-        return widgetList;
-    }
-
-    public void setWidgetList(List<DashboardWidgetVo> widgetList) {
-        this.widgetList = widgetList;
-    }
 
     public String getDescription() {
         return description;
@@ -110,77 +101,48 @@ public class DashboardVo extends BaseEditorVo {
         this.type = type;
     }
 
-    public int getIsSystemDefault() {
-        return isSystemDefault;
-    }
 
-    public void setIsSystemDefault(int isSystemDefault) {
-        this.isSystemDefault = isSystemDefault;
-    }
-
-    public int getIsCustomDefault() {
-        return isCustomDefault;
-    }
-
-    public void setIsCustomDefault(int isCustomDefault) {
-        this.isCustomDefault = isCustomDefault;
-    }
-
-    public List<String> getValueList() {
-        if (CollectionUtils.isEmpty(valueList)) {
-            valueList = new ArrayList<String>();
+    public List<String> getAuthList() {
+        if (CollectionUtils.isEmpty(authList)) {
+            authList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(authorityList)) {
                 for (AuthorityVo authorityVo : this.authorityList) {
                     if (authorityVo.getType().equals(GroupSearch.ROLE.getValue())) {
-                        valueList.add(GroupSearch.ROLE.getValuePlugin() + authorityVo.getUuid());
+                        authList.add(GroupSearch.ROLE.getValuePlugin() + authorityVo.getUuid());
                     } else if (authorityVo.getType().equals(GroupSearch.USER.getValue())) {
-                        valueList.add(GroupSearch.USER.getValuePlugin() + authorityVo.getUuid());
+                        authList.add(GroupSearch.USER.getValuePlugin() + authorityVo.getUuid());
                     } else if (authorityVo.getType().equals(GroupSearch.TEAM.getValue())) {
-                        valueList.add(GroupSearch.TEAM.getValuePlugin() + authorityVo.getUuid());
+                        authList.add(GroupSearch.TEAM.getValuePlugin() + authorityVo.getUuid());
                     }
                 }
             }
         }
-        return valueList;
+        return authList;
     }
 
-    public void setValueList(List<String> valueList) {
-        this.valueList = valueList;
+    public void setAuthList(List<String> authList) {
+        this.authList = authList;
     }
 
-    public String getDefaultUser() {
-        return defaultUser;
-    }
-
-    public void setDefaultUser(String defaultUser) {
-        this.defaultUser = defaultUser;
-    }
-
-    public String getDefaultType() {
-        return defaultType;
-    }
-
-    public void setDefaultType(String defaultType) {
-        this.defaultType = defaultType;
-    }
-
-    public Integer getIsCanEdit() {
-        return isCanEdit;
-    }
-
-    public void setIsCanEdit(Integer isCanEdit) {
-        this.isCanEdit = isCanEdit;
-    }
-
-    public Integer getIsCanRole() {
-        return isCanRole;
-    }
-
-    public void setIsCanRole(Integer isCanRole) {
-        this.isCanRole = isCanRole;
-    }
 
     public List<AuthorityVo> getAuthorityList() {
+        if (CollectionUtils.isEmpty(authorityList) && CollectionUtils.isNotEmpty(authList)) {
+            authorityList = new ArrayList<>();
+            for (String value : authList) {
+                AuthorityVo authorityVo = new AuthorityVo();
+                if (value.startsWith(GroupSearch.ROLE.getValuePlugin())) {
+                    authorityVo.setType(GroupSearch.ROLE.getValue());
+                    authorityVo.setUuid(value.replaceAll(GroupSearch.ROLE.getValuePlugin(), StringUtils.EMPTY));
+                } else if (value.startsWith(GroupSearch.USER.getValuePlugin())) {
+                    authorityVo.setType(GroupSearch.USER.getValue());
+                    authorityVo.setUuid(value.replaceAll(GroupSearch.USER.getValuePlugin(), StringUtils.EMPTY));
+                } else if (value.startsWith(GroupSearch.TEAM.getValuePlugin())) {
+                    authorityVo.setType(GroupSearch.TEAM.getValue());
+                    authorityVo.setUuid(value.replaceAll(GroupSearch.TEAM.getValuePlugin(), StringUtils.EMPTY));
+                }
+                authorityList.add(authorityVo);
+            }
+        }
         return authorityList;
     }
 
@@ -214,49 +176,42 @@ public class DashboardVo extends BaseEditorVo {
 
 
     public Integer getIsMine() {
-        return isMine;
-    }
-
-    public void setIsMine(Integer isMine) {
-        this.isMine = isMine;
-    }
-
-
-    public enum DashBoardType {
-        SYSTEM("system", "系统分类"), CUSTOM("custom", "自定义");
-        private String value;
-        private String name;
-
-        private DashBoardType(String _value, String _name) {
-            this.value = _value;
-            this.name = _name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public static String getValue(String _value) {
-            for (DashBoardType s : DashBoardType.values()) {
-                if (s.getValue().equals(_value)) {
-                    return s.getValue();
-                }
+        if (StringUtils.isNotBlank(searchType)) {
+            if (searchType.equalsIgnoreCase("all")) {
+                return 0;
+            } else if (searchType.equalsIgnoreCase("mine")) {
+                return 1;
             }
-            return null;
         }
-
-        public static String getName(String _value) {
-            for (DashBoardType s : DashBoardType.values()) {
-                if (s.getValue().equals(_value)) {
-                    return s.getName();
-                }
-            }
-            return "";
-        }
-
+        return 0;
     }
+
+
+    public JSONArray getWidgetList() {
+        if (widgetList == null && StringUtils.isNotBlank(widgetListStr)) {
+            try {
+                widgetList = JSONArray.parseArray(widgetListStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        return widgetList;
+    }
+
+    public void setWidgetList(JSONArray widgetList) {
+        this.widgetList = widgetList;
+    }
+
+    public String getWidgetListStr() {
+        if (widgetList != null) {
+            widgetListStr = widgetList.toString();
+        }
+        return widgetListStr;
+    }
+
+    public void setWidgetListStr(String widgetListStr) {
+        this.widgetListStr = widgetListStr;
+    }
+
+
 }
