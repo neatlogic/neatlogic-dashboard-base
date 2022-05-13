@@ -174,6 +174,13 @@ public class DashboardVo extends BaseEditorVo {
         this.roleUuidList = roleUuidList;
     }
 
+    public String getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
 
     public Integer getIsMine() {
         if (StringUtils.isNotBlank(searchType)) {
