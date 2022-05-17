@@ -70,7 +70,7 @@ public class DashboardVo extends BaseEditorVo {
         this.name = name;
     }
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return AuthActionChecker.check("DASHBOARD_MODIFY");
     }
 
