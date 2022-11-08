@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardVo extends BaseEditorVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
@@ -49,6 +50,8 @@ public class DashboardVo extends BaseEditorVo {
     private List<String> teamUuidList;
     private List<String> roleUuidList;
     private Integer isMine;
+    private Map<Long, String> datasourceIdNameMap; // 数据源id->名称map
+    private Map<Long, String> datasourceFieldIdNameMap;// 数据源字段id->名称map
 
 
     public Long getId() {
@@ -220,5 +223,19 @@ public class DashboardVo extends BaseEditorVo {
         this.widgetListStr = widgetListStr;
     }
 
+    public Map<Long, String> getDatasourceIdNameMap() {
+        return datasourceIdNameMap;
+    }
 
+    public void setDatasourceIdNameMap(Map<Long, String> datasourceIdNameMap) {
+        this.datasourceIdNameMap = datasourceIdNameMap;
+    }
+
+    public Map<Long, String> getDatasourceFieldIdNameMap() {
+        return datasourceFieldIdNameMap;
+    }
+
+    public void setDatasourceFieldIdNameMap(Map<Long, String> datasourceFieldIdNameMap) {
+        this.datasourceFieldIdNameMap = datasourceFieldIdNameMap;
+    }
 }
