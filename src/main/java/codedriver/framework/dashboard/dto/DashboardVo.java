@@ -49,6 +49,7 @@ public class DashboardVo extends BaseEditorVo {
     private List<String> teamUuidList;
     private List<String> roleUuidList;
     private Integer isMine;
+    private JSONArray datasourceInfoList;// 数据源（包含字段、条件字段）的id名称信息，结构形如：[{"conditionList":[{"name":"stepUserUuid","id":625917067845634}],"name":"processTaskStepUserDaySum","id":625917067845632,"fieldList":[{"name":"count","id":625917067845636},{"name":"stepEveryday","id":625918846230754}],"widgetUuid":"8a292f264d7f4a3d996ad7d392469157"}]
 
 
     public Long getId() {
@@ -220,5 +221,11 @@ public class DashboardVo extends BaseEditorVo {
         this.widgetListStr = widgetListStr;
     }
 
+    public JSONArray getDatasourceInfoList() {
+        return datasourceInfoList;
+    }
 
+    public void setDatasourceInfoList(JSONArray datasourceInfoList) {
+        this.datasourceInfoList = datasourceInfoList;
+    }
 }
