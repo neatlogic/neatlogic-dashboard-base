@@ -16,9 +16,11 @@ limitations under the License.
 
 package neatlogic.framework.dashboard.constvalue;
 
+import neatlogic.framework.util.I18nUtils;
+
 public enum DashboardStatistics implements IDashboardGroupField{
-    COUNT("count","计数"),
-    SUM("sum","总数");
+    COUNT("count","enum.dashboard.dashboardstatistics.count"),
+    SUM("sum","enum.dashboard.dashboardstatistics.sum");
 
     private final String value;
     private final String text;
@@ -35,7 +37,7 @@ public enum DashboardStatistics implements IDashboardGroupField{
 
     @Override
     public String getText() {
-        return text;
+        return I18nUtils.getMessage(text);
     }
 
     public static String getValue(String _value) {
