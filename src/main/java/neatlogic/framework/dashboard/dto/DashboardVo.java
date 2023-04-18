@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.auth.core.AuthActionChecker;
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.dto.AuthorityVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -116,6 +117,13 @@ public class DashboardVo extends BaseEditorVo {
 
     public List<String> getAuthList() {
         if (CollectionUtils.isEmpty(authList) && CollectionUtils.isNotEmpty(authorityList)) {
+            authList = new ArrayList<>();
+            for (AuthorityVo authorityVo : authorityList) {
+                GroupSearch groupSearch = GroupSearch.getGroupSearch(authorityVo.getType());
+                if (groupSearch != null) {
+                    authList.add(groupSearch.getValuePlugin() + authorityVo.getUuid());
+                }
+            }
             authList = authorityList.stream().map(a -> a.getType() + "#" + a.getUuid()).collect(Collectors.toList());
         }
         return authList;
@@ -130,8 +138,7 @@ public class DashboardVo extends BaseEditorVo {
         if (CollectionUtils.isEmpty(authorityList) && CollectionUtils.isNotEmpty(authList)) {
             authorityList = new ArrayList<>();
             for (String authorityStr : authList) {
-                String[] authorityArray = authorityStr.split("#");
-                authorityList.add(new AuthorityVo(authorityArray[0], authorityArray[1]));
+                authorityList.add(new AuthorityVo(GroupSearch.getPrefix(authorityStr), GroupSearch.removePrefix(authorityStr)));
             }
         }
         return authorityList;
