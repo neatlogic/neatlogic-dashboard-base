@@ -16,6 +16,8 @@
 
 package neatlogic.framework.dashboard.dto;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.auth.core.AuthActionChecker;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.constvalue.GroupSearch;
@@ -23,8 +25,6 @@ import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.dto.AuthorityVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -115,17 +115,12 @@ public class DashboardVo extends BaseEditorVo {
 
 
     public List<String> getAuthList() {
-        if (CollectionUtils.isEmpty(authList)) {
+        if (CollectionUtils.isEmpty(authList) && CollectionUtils.isNotEmpty(authorityList)) {
             authList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(authorityList)) {
-                for (AuthorityVo authorityVo : this.authorityList) {
-                    if (authorityVo.getType().equals(GroupSearch.ROLE.getValue())) {
-                        authList.add(GroupSearch.ROLE.getValuePlugin() + authorityVo.getUuid());
-                    } else if (authorityVo.getType().equals(GroupSearch.USER.getValue())) {
-                        authList.add(GroupSearch.USER.getValuePlugin() + authorityVo.getUuid());
-                    } else if (authorityVo.getType().equals(GroupSearch.TEAM.getValue())) {
-                        authList.add(GroupSearch.TEAM.getValuePlugin() + authorityVo.getUuid());
-                    }
+            for (AuthorityVo authorityVo : authorityList) {
+                GroupSearch groupSearch = GroupSearch.getGroupSearch(authorityVo.getType());
+                if (groupSearch != null) {
+                    authList.add(groupSearch.getValuePlugin() + authorityVo.getUuid());
                 }
             }
         }
@@ -140,19 +135,8 @@ public class DashboardVo extends BaseEditorVo {
     public List<AuthorityVo> getAuthorityList() {
         if (CollectionUtils.isEmpty(authorityList) && CollectionUtils.isNotEmpty(authList)) {
             authorityList = new ArrayList<>();
-            for (String value : authList) {
-                AuthorityVo authorityVo = new AuthorityVo();
-                if (value.startsWith(GroupSearch.ROLE.getValuePlugin())) {
-                    authorityVo.setType(GroupSearch.ROLE.getValue());
-                    authorityVo.setUuid(value.replaceAll(GroupSearch.ROLE.getValuePlugin(), StringUtils.EMPTY));
-                } else if (value.startsWith(GroupSearch.USER.getValuePlugin())) {
-                    authorityVo.setType(GroupSearch.USER.getValue());
-                    authorityVo.setUuid(value.replaceAll(GroupSearch.USER.getValuePlugin(), StringUtils.EMPTY));
-                } else if (value.startsWith(GroupSearch.TEAM.getValuePlugin())) {
-                    authorityVo.setType(GroupSearch.TEAM.getValue());
-                    authorityVo.setUuid(value.replaceAll(GroupSearch.TEAM.getValuePlugin(), StringUtils.EMPTY));
-                }
-                authorityList.add(authorityVo);
+            for (String authorityStr : authList) {
+                authorityList.add(new AuthorityVo(GroupSearch.getPrefix(authorityStr), GroupSearch.removePrefix(authorityStr)));
             }
         }
         return authorityList;
