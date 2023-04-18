@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DashboardVo extends BaseEditorVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
@@ -124,7 +123,6 @@ public class DashboardVo extends BaseEditorVo {
                     authList.add(groupSearch.getValuePlugin() + authorityVo.getUuid());
                 }
             }
-            authList = authorityList.stream().map(a -> a.getType() + "#" + a.getUuid()).collect(Collectors.toList());
         }
         return authList;
     }
