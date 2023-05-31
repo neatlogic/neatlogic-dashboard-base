@@ -19,7 +19,7 @@ package neatlogic.framework.dashboard.enums;
 import neatlogic.framework.util.I18nUtils;
 
 public enum DashboardType {
-    SYSTEM("system", "enum.dashboard.dashboardtype.system"), CUSTOM("custom", "enum.dashboard.dashboardtype.custom");
+    SYSTEM("system", "enum.dashboard.dashboardtype.system"), CUSTOM("custom", "common.custom");
     private final String value;
     private final String name;
 
