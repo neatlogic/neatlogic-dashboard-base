@@ -19,8 +19,8 @@ package neatlogic.framework.dashboard.constvalue;
 import neatlogic.framework.util.I18nUtils;
 
 public enum DashboardStatistics implements IDashboardGroupField{
-    COUNT("count","common.count"),
-    SUM("sum","enum.dashboard.dashboardstatistics.sum");
+    COUNT("count","计数"),
+    SUM("sum","总数");
 
     private final String value;
     private final String text;
