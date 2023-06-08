@@ -16,7 +16,7 @@
 
 package neatlogic.framework.dashboard.enums;
 
-import neatlogic.framework.util.I18nUtils;
+import neatlogic.framework.util.$;
 
 public enum DashboardType {
     SYSTEM("system", "系统分类"), CUSTOM("custom", "自定义");
@@ -33,7 +33,7 @@ public enum DashboardType {
     }
 
     public String getName() {
-        return I18nUtils.getMessage(name);
+        return $.t(name);
     }
 
     public static String getValue(String _value) {

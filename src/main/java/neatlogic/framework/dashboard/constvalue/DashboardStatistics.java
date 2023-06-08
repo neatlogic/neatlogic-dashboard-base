@@ -16,7 +16,7 @@ limitations under the License.
 
 package neatlogic.framework.dashboard.constvalue;
 
-import neatlogic.framework.util.I18nUtils;
+import neatlogic.framework.util.$;
 
 public enum DashboardStatistics implements IDashboardGroupField{
     COUNT("count","计数"),
@@ -37,7 +37,7 @@ public enum DashboardStatistics implements IDashboardGroupField{
 
     @Override
     public String getText() {
-        return I18nUtils.getMessage(text);
+        return $.t(text);
     }
 
     public static String getValue(String _value) {
