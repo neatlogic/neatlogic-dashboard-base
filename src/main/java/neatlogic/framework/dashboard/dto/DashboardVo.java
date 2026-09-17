@@ -21,6 +21,7 @@ import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.dto.AuthorityVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
+import neatlogic.module.dashboard.auth.label.DASHBOARD_MODIFY;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,7 +80,7 @@ public class DashboardVo extends BaseEditorVo {
     }
 
     public boolean getIsAdmin() {
-        return AuthActionChecker.check("DASHBOARD_MODIFY");
+        return AuthActionChecker.check(DASHBOARD_MODIFY.class);
     }
 
 
