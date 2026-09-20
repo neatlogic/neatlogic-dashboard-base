@@ -1,0 +1,17 @@
+{
+  "auth": {
+    "dashboard_base": {
+      "description": "查看系统类面板",
+      "name": "面板查看权限"
+    },
+    "dashboard_modify": {
+      "description": "对系统类面板进行新增、编辑、授权和删除",
+      "name": "面板管理权限"
+    }
+  },
+  "term": {
+    "dashboard": {
+      "groupname": "仪表板"
+    }
+  }
+}

@@ -13,13 +13,19 @@
 
 	<build>
 		<resources>
-			<resource>
-				<directory>src/main/java</directory>
+            <resource>
+                <directory>src/main/java</directory>
 				<includes>
 					<include>**/*.xml</include>
 					<include>META-INF/**</include>
-				</includes>
-			</resource>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>neatlogic/**</include>
+                </includes>
+            </resource>
 		</resources>
 	</build>
 	<dependencies>

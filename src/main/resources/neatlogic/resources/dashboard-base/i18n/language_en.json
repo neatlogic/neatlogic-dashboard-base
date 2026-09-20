@@ -1,0 +1,17 @@
+{
+  "auth": {
+    "dashboard_base": {
+      "description": "View system dashboards.",
+      "name": "Dashboard View Permission"
+    },
+    "dashboard_modify": {
+      "description": "Create, edit, authorize access to, and delete system dashboards.",
+      "name": "Dashboard Management Permission"
+    }
+  },
+  "term": {
+    "dashboard": {
+      "groupname": "Dashboard"
+    }
+  }
+}
